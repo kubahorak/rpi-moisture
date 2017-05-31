@@ -13,12 +13,11 @@ webhook_url = "https://api.thingspeak.com/update?api_key=3YJ24WQGWH6XG358"
 # This is our submitValue function
 
 def submitValue(value):
-	try:
-        response =  urllib2.urlopen(webhook_url + "&field1=" + value)
-        print response.read() 
-		print "Successfully submitted value"
-	except urllib2.URLError:
-		print "Error: unable to submit value"
+    try:
+        response = urllib2.urlopen(webhook_url + "&field1=" + str(value))
+        print "Successfully submitted value. Response:", response.read() 
+    except urllib2.URLError:
+        print "Error: unable to submit value"
 
 # This is our callback function, this function will be called every time there is a change on the specified GPIO channel, in this example we are using 17
 
@@ -43,7 +42,7 @@ GPIO.add_event_detect(channel, GPIO.BOTH, bouncetime=300)
 # This line asigns a function to the GPIO pin so that when the above line tells us there is a change on the pin, run this function
 GPIO.add_event_callback(channel, callback)
 
-# This is an infinte loop to keep our script running
+# This is an infinite loop to keep our script running
 while True:
 	# This line simply tells our script to wait 0.1 of a second, this is so the script doesnt hog all of the CPU
 	time.sleep(60)
