@@ -1,0 +1,48 @@
+---
+- hosts: raspberrypi
+  vars:
+    ansible_user: pi
+  tasks:
+    - name: change default pi password
+      become: yes
+      user: name={{ ansible_user }} password=$6$Ltk.EwbKn9$Tk3vVBA2GpWJAh1YgOafuZmfNj8pTYNBtEG1vTGw1xwsJFtSJ9yK4eFEQjR6R8PPsnqwy1ofk0UXq4YxHvrXd/
+    - name: allow passwordless login
+      become: yes
+      authorized_key:
+        user: "{{ ansible_user }}"
+        key: "{{ lookup('file', '/home/j.horak/.ssh/id_rsa.pub') }}"
+    - name: download Witty Pi 2 software
+      get_url:
+        url: "http://www.uugear.com/repo/WittyPi2/installWittyPi.sh"
+        dest: "{{ ansible_env.HOME }}"
+    - name: install Witty Pi 2 software
+      become: yes
+      shell:  sh "{{ ansible_env.HOME }}/installWittyPi.sh"
+    - name: sync Witty Pi 2 time
+      become: yes
+      shell:  sh "{{ ansible_env.HOME }}/wittyPi/syncTime.sh"
+    - name: disable HDMI
+      become: yes
+      lineinfile: dest=/etc/rc.local line="/usr/bin/tvservice -o" insertbefore="^exit"
+    - name: deploy moisture script
+      synchronize:
+        src: /home/j.horak/prg/rpi/Moisture-Sensor
+        dest: "{{ ansible_env.HOME }}"
+        delete: yes
+        rsync_opts:
+          - "--exclude=.git"
+    - name: setup moisture script
+      become: yes
+      lineinfile: dest=/etc/rc.local line="python /home/pi/Moisture-Sensor/moisture.py >> /var/log/moisture.log &" insertbefore="^exit"
+    - name: copy schedule script
+      copy:
+        src: schedule.wpi
+        dest: "{{ ansible_env.HOME }}/wittyPi/schedule.wpi"
+    - name: run schedule script
+      become: yes
+      shell:  "{{ ansible_env.HOME }}/wittyPi/runScript.sh"
+  roles:
+    - role: mikolak.raspi-config
+      become: yes
+      raspi_config_hostname: raspberrypi
+      raspi_config_ensure_optimal_cpu_params: no
