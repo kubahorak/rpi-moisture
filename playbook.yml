@@ -24,6 +24,11 @@
     - name: disable HDMI
       become: yes
       lineinfile: dest=/etc/rc.local line="/usr/bin/tvservice -o" insertbefore="^exit"
+    - name: wait for network after boot
+      become: yes
+      copy:
+        src: wait.conf
+        dest: /etc/systemd/system/dhcpcd.service.d/wait.conf
     - name: deploy moisture script
       synchronize:
         src: /home/j.horak/prg/rpi/Moisture-Sensor
