@@ -3,4 +3,4 @@
 BEGIN   2015-08-01 00:00:00
 END 2025-07-31 23:59:59
 ON  M2  # keep ON state for 2 minutes
-OFF H1 M58  # keep OFF state for 1 hour 55 minutes
+OFF H1 M58  # keep OFF state for 1 hour 58 minutes
