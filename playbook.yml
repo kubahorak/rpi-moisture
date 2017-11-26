@@ -31,14 +31,14 @@
         dest: /etc/systemd/system/dhcpcd.service.d/wait.conf
     - name: deploy moisture script
       synchronize:
-        src: /home/j.horak/prg/rpi/Moisture-Sensor
+        src: /home/j.horak/prg/rpi/rpi-moisture
         dest: "{{ ansible_env.HOME }}"
         delete: yes
         rsync_opts:
           - "--exclude=.git"
     - name: setup moisture script
       become: yes
-      lineinfile: dest=/etc/rc.local line="python /home/pi/Moisture-Sensor/moisture.py >> /var/log/moisture.log &" insertbefore="^exit"
+      lineinfile: dest=/etc/rc.local line="(sleep 60 && python /home/pi/rpi-moisture/moisture.py >> /var/log/moisture.log) &" insertbefore="^exit"
     - name: copy schedule script
       copy:
         src: schedule.wpi
