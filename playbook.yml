@@ -10,7 +10,7 @@
       become: yes
       authorized_key:
         user: "{{ ansible_user }}"
-        key: "{{ lookup('file', '/home/j.horak/.ssh/id_rsa.pub') }}"
+        key: "{{ lookup('file', '/home/kuba/.ssh/id_rsa.pub') }}"
     - name: download Witty Pi 2 software
       get_url:
         url: "http://www.uugear.com/repo/WittyPi2/installWittyPi.sh"
@@ -24,6 +24,9 @@
     - name: disable HDMI
       become: yes
       lineinfile: dest=/etc/rc.local line="/usr/bin/tvservice -o" insertbefore="^exit"
+    - name: enable Datadog agent
+      become: yes
+      lineinfile: dest=/etc/rc.local line="nohup sh /home/pi/.datadog-agent/bin/agent &" insertbefore="^exit"
     - name: wait for network after boot
       become: yes
       copy:
@@ -31,7 +34,7 @@
         dest: /etc/systemd/system/dhcpcd.service.d/wait.conf
     - name: deploy moisture script
       synchronize:
-        src: /home/j.horak/prg/rpi/rpi-moisture
+        src: /home/kuba/prg/rpi/rpi-moisture
         dest: "{{ ansible_env.HOME }}"
         delete: yes
         rsync_opts:
@@ -51,3 +54,6 @@
       become: yes
       raspi_config_hostname: raspberrypi
       raspi_config_ensure_optimal_cpu_params: no
+    - role: Datadog.datadog
+      become: yes
+      datadog_api_key: "{{ datadog_api_key }}"
