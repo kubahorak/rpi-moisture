@@ -17,13 +17,24 @@
         dest: "{{ ansible_env.HOME }}"
     - name: install Witty Pi 2 software
       become: yes
-      shell:  sh "{{ ansible_env.HOME }}/installWittyPi.sh"
+      shell:  bash "{{ ansible_env.HOME }}/installWittyPi.sh"
     - name: sync Witty Pi 2 time
       become: yes
-      shell:  sh "{{ ansible_env.HOME }}/wittyPi/syncTime.sh"
+      shell:  bash "{{ ansible_env.HOME }}/wittyPi/syncTime.sh"
     - name: disable HDMI
       become: yes
       lineinfile: dest=/etc/rc.local line="/usr/bin/tvservice -o" insertbefore="^exit"
+    - name: install sysstat
+      become: yes
+      package:
+        name: sysstat
+        state: present
+    - name: install Datadog agent
+      become: yes
+      environment:
+        DD_API_KEY: "{{ datadog_api_key }}"
+        DD_START_AGENT: 0
+      shell: sh -c "$(curl -L https://raw.githubusercontent.com/DataDog/dd-agent/master/packaging/datadog-agent/source/setup_agent.sh)"
     - name: enable Datadog agent
       become: yes
       lineinfile: dest=/etc/rc.local line="nohup sh /home/pi/.datadog-agent/bin/agent &" insertbefore="^exit"
@@ -54,6 +65,3 @@
       become: yes
       raspi_config_hostname: raspberrypi
       raspi_config_ensure_optimal_cpu_params: no
-    - role: Datadog.datadog
-      become: yes
-      datadog_api_key: "{{ datadog_api_key }}"
