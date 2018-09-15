@@ -19,5 +19,6 @@ Read the accompanying blog post [Connecting plants to the internet](https://zee.
 1. Install latest Raspbian on the Pi
 1. Boot with HDMI monitor connected, connect to WiFi and enable SSH 
 1. Install Ansible requirements `sudo ansible-galaxy install -r requirements.yml`
-1. Run playbook `sudo ansible-playbook -i hosts playbook.yml --extra-vars "datadog_api_key=XXX"`
+1. Run playbook `sudo ansible-playbook -i hosts playbook.yml --extra-vars "datadog_api_key=XXX"` (add
+   `--ask-pass` if SSH is set-up via password authentication)
 1. Install WittyPi 2 following the [manual](http://www.uugear.com/doc/WittyPi2_UserManual.pdf) and configure it to use the `schedule.wpi` file provided here

@@ -7,37 +7,38 @@ import urllib2 # To send GET request
 import time
 import datetime
 
-# Define some variables to be used later on in our script
-
-webhook_url = "https://api.thingspeak.com/update?api_key=3YJ24WQGWH6XG358"
-
 # This is our submitValue function
 
-def submitValue(value):
+def submitValue(name, base_url, value):
     try:
-        url = webhook_url + "&field1=" + str(value)
+        url = base_url + "&field1=" + str(value)
         response = urllib2.urlopen(url)
-        print "Successfully submitted value. Response: {0}".format(response.read())
+        print "{}: Successfully submitted value. Response: {}".format(name, response.read())
     except urllib2.URLError as e:
-        print "Error: unable to submit value to URL: {0}, {1}".format(url, e)
+        print "{}: Error: unable to submit value to URL: {}, {}".format(name, url, e)
 
-# This is our callback function, this function will be called every time there is a change on the specified GPIO channel, in this example we are using 17
+# This is our check function, this function will be called to check the specific channel
 
-def callback(channel):  
+def check(name, channel, url):
     print datetime.datetime.now()
     if GPIO.input(channel):
-        print "LED off"
-        submitValue(1)
+        print "{}: LED off".format(name)
+        submitValue(name, url, 1)
     else:
-        print "LED on"
-        submitValue(0)
+        print "{}: LED on".format(name)
+        submitValue(name, url, 0)
 
 # Set our GPIO numbering to BCM
 GPIO.setmode(GPIO.BCM)
 
 # Define the GPIO pin that we have our digital output from our sensor connected to
-channel = 17
-# Set the GPIO pin to an input
-GPIO.setup(channel, GPIO.IN)
+plants = {
+        "peace_lily": (17, "https://api.thingspeak.com/update?api_key=3YJ24WQGWH6XG358"),
+        "parsley": (23, "https://api.thingspeak.com/update?api_key=CYABHN6FCS9JL5YH")
+        }
 
-callback(channel)
+for name, (channel, url) in plants.iteritems():
+    # Set the GPIO pin to an input
+    GPIO.setup(channel, GPIO.IN)
+
+    check(name, channel, url)
