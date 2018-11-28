@@ -24,20 +24,39 @@ def check(name, channel, url):
     if GPIO.input(channel):
         print "{}: LED off".format(name)
         submitValue(name, url, 1)
+        pumpWater(name)
     else:
         print "{}: LED on".format(name)
         submitValue(name, url, 0)
+
+# This is our watering function, it triggers the pump
+
+def pumpWater(name):
+    (channel, durationSeconds) = pumps[name]
+    GPIO.setup(channel, GPIO.OUT)
+    GPIO.output(channel, GPIO.LOW)
+    time.sleep(durationSeconds)
+    GPIO.output(channel, GPIO.HIGH)
+    print "{}: watered for {} seconds".format(name, delay)
+
 
 # Set our GPIO numbering to BCM
 GPIO.setmode(GPIO.BCM)
 
 # Define the GPIO pin that we have our digital output from our sensor connected to
-plants = {
+# and URL which to call on sensor state change
+sensors = {
         "peace_lily": (17, "https://api.thingspeak.com/update?api_key=3YJ24WQGWH6XG358"),
         "parsley": (23, "https://api.thingspeak.com/update?api_key=CYABHN6FCS9JL5YH")
         }
 
-for name, (channel, url) in plants.iteritems():
+# Define the GPIO pin that we have our digital input to the respective relay connected to
+# and number of seconds to pump each time
+pumps = {
+        "parsley": (27, 1)
+        }
+
+for name, (channel, url) in sensors.iteritems():
     # Set the GPIO pin to an input
     GPIO.setup(channel, GPIO.IN)
 
