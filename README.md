@@ -1,7 +1,7 @@
 # Moisture sensors
 
 Read the accompanying blog posts [Connecting plants to the internet](https://zee.cz/2017/07/connecting-plants-to-the-internet/).
-and ... TODO
+and [Automatic plant watering with Raspberry Pi](https://zee.cz/2018/12/automatic-plant-…ith-raspberry-pi/)
 
 ## Hardware components
 
