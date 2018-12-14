@@ -53,7 +53,7 @@ sensors = {
 # Define the GPIO pin that we have our digital input to the respective relay connected to
 # and number of seconds to pump each time
 pumps = {
-        "parsley": (27, 1)
+        "peace_lily": (27, 1)
         }
 
 for name, (channel, url) in sensors.iteritems():
