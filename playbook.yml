@@ -15,6 +15,8 @@
       get_url:
         url: "http://www.uugear.com/repo/WittyPi2/installWittyPi.sh"
         dest: "{{ ansible_env.HOME }}"
+    - debug:
+        msg: "Witty Pi 2 software might require interactive input and fail to progress"
     - name: install Witty Pi 2 software
       become: yes
       shell:  bash "{{ ansible_env.HOME }}/installWittyPi.sh"
@@ -52,7 +54,7 @@
           - "--exclude=.git"
     - name: setup moisture script
       become: yes
-      lineinfile: dest=/etc/rc.local line="(sleep 60 && python /home/pi/rpi-moisture/moisture.py >> /var/log/moisture.log) &" insertbefore="^exit"
+      lineinfile: dest=/etc/rc.local line="(sleep 60 && python /home/pi/rpi-moisture/moisture.py 2>&1 >> /var/log/moisture.log) &" insertbefore="^exit"
     - name: copy schedule script
       copy:
         src: schedule.wpi
@@ -61,7 +63,7 @@
       become: yes
       shell:  "{{ ansible_env.HOME }}/wittyPi/runScript.sh"
   roles:
-    - role: mikolak.raspi-config
+    - role: mikolak-net.raspi_config
       become: yes
       raspi_config_hostname: raspberrypi
       raspi_config_ensure_optimal_cpu_params: no

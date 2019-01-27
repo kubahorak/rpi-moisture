@@ -32,12 +32,13 @@ def check(name, channel, url):
 # This is our watering function, it triggers the pump
 
 def pumpWater(name):
-    (channel, durationSeconds) = pumps[name]
-    GPIO.setup(channel, GPIO.OUT)
-    GPIO.output(channel, GPIO.LOW)
-    time.sleep(durationSeconds)
-    GPIO.output(channel, GPIO.HIGH)
-    print "{}: watered for {} seconds".format(name, delay)
+    if name in pumps:
+        (channel, durationSeconds) = pumps[name]
+        GPIO.setup(channel, GPIO.OUT)
+        GPIO.output(channel, GPIO.LOW)
+        time.sleep(durationSeconds)
+        GPIO.output(channel, GPIO.HIGH)
+        print "{}: watered for {} seconds".format(name, durationSeconds)
 
 
 # Set our GPIO numbering to BCM
@@ -53,7 +54,7 @@ sensors = {
 # Define the GPIO pin that we have our digital input to the respective relay connected to
 # and number of seconds to pump each time
 pumps = {
-        "parsley": (27, 1)
+        "peace_lily": (27, 1)
         }
 
 for name, (channel, url) in sensors.iteritems():
